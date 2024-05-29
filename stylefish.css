@@ -3,7 +3,7 @@ body {
     flex-direction: column;
     font-family: cursive, sans-serif;
     font-size:larger;
-    background-image: url('contents/wall.jpg');
+    background-image: url('images/wall.jpg');
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
