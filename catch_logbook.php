@@ -20,7 +20,6 @@ if(isset($_POST["submit"])){
         $query = "INSERT into catchlogbook (zoneid, species, quantity, datetime, userid) VALUES ('$zoneid', '$species','$quantity','$datetime', '$userid')";
         mysqli_query($conn, $query);
         echo "<script> alert('Added Successfully'); </script>";
-
 }
 }
 

@@ -52,7 +52,7 @@ if(isset($_POST["submit"])){
     
     <nav id=back>
         <a href="index_fish.php">Home</a>
-        <a href="profile.php">Register</a>
+        <a href="user_registration.php">Register</a>
     </nav>
     <footer>
         <p>&copy; 2024 Fisherman Website</p>

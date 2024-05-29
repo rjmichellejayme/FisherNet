@@ -25,7 +25,7 @@ if(!empty($_SESSION["UserID"])){
         <h1>Fisherman Website</h1>
         <nav>
             <ul>
-                <li><a href="profile.php">Profile</a></li>
+                <li><a href="profile_management.php">Profile</a></li>
                 <li><a href="fishing_zone.php">Fishing Zones</a></li>
                 <li><a href="catch_logbook.php">Catch Logbook</a></li>
                 <li><a href="fish_market_prices.php">Fish Market Prices</a></li>
