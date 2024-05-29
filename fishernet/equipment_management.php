@@ -73,6 +73,7 @@ if (isset($_POST["update"])) {
     </script>
     <style>
         .form-container {
+            margin-top: 5%;
             display: none;
         }
     </style>

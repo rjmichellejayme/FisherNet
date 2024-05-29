@@ -89,6 +89,12 @@ if ($userZonesResult && mysqli_num_rows($userZonesResult) > 0) {
             document.getElementById(formId).style.display = 'block';
         }
     </script>
+    <style>
+        .form-container {
+            margin-top: 5%;
+        }
+    </style>
+
      <style>
         table {
             width: 100%;

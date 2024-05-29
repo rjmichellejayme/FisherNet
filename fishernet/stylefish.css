@@ -169,3 +169,25 @@ table {
   border-collapse: collapse;
   margin: 20px 0;
 }
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px; /* Adjust margin as needed */
+}
+
+#actionSelect {
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #fff;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+#actionSelect:focus {
+  border-color: #007bff;
+}
