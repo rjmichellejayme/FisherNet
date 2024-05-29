@@ -27,7 +27,7 @@ if (isset($_POST["edit"])) {
     $updateQuery = "UPDATE equipment SET quantity='$newQuantity' WHERE equipname='$eqname' AND userid='$userid'";
     $updateResult = mysqli_query($conn, $updateQuery);
     if(mysqli_affected_rows($conn) > 0){
-        echo "<script> alert('Equipmet Updated Successfully'); </script>";
+        echo "<script> alert('Equipment Updated Successfully'); </script>";
     } else {
         echo "<script> alert('No Equipment Found to Update'); </script>";
     }
