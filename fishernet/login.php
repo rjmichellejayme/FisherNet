@@ -47,13 +47,15 @@ if(isset($_POST["submit"])){
             <label for="password">Password:</label>
             <input type="password" id="password" name="password" required><br>
             <input type="submit" name="submit" value="Log-in">
+    <p>Don't have an account? <a href="profile.php">Register</a></p>
     </form>
+
+    <nav id=back>
+        <a class="button" href="index_fish.php">Home</a>
+    </nav>
+
     </main>
     
-    <nav id=back>
-        <a href="index_fish.php">Home</a>
-        <a href="profile.php">Register</a>
-    </nav>
     <footer>
         <p>&copy; 2024 Fisherman Website</p>
     </footer>
