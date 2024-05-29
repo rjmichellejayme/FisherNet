@@ -8,7 +8,7 @@ if(!empty($_SESSION["UserID"])){
     $row = mysqli_fetch_assoc($result);
 
 }else{
-   header("Location:profile.php");
+   header("Location:user_registration.php");
 }
 ?>
 
