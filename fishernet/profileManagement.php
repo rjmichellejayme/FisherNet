@@ -1,5 +1,5 @@
 <?php
-require 'dbfish.php'; // Include your database connection file
+include 'dbfish.php';
 session_start();
 
 if (empty($_SESSION["UserID"])) {

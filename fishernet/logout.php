@@ -1,5 +1,5 @@
 <?php
-require 'dbfish.php';
+include 'dbfish.php';
 session_start();
 
 $_SESSION = [];
