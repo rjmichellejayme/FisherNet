@@ -1,5 +1,5 @@
 <?php
-include "../dbfish.php"; 
+include "dbfish.php"; 
 session_start();
 
 if(!empty($_SESSION["UserID"])){
