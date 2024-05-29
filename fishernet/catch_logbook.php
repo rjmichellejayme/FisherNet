@@ -20,7 +20,7 @@ if (isset($_POST["submit"])) {
     if (mysqli_num_rows($zone_check) == 0) {
         echo "<script> alert('Invalid Zone Name'); </script>";
     } else {
-        $query = "INSERT into catchlogbook (ZoneName, Species, Quantity, DateTime, UserID) VALUES ('$zonename', '$species','$quantity','$datetime', '$userid')";
+        $query = "INSERT INTO catchlogbook (ZoneName, Species, Quantity, DateTime, UserID) VALUES ('$zonename', '$species','$quantity','$datetime', '$userid')";
         mysqli_query($conn, $query);
         echo "<script> alert('Added Successfully'); </script>";
     }
@@ -29,7 +29,7 @@ if (isset($_POST["submit"])) {
 // Deleting Entry
 if (isset($_POST["delete"])) {
     $logID = $_POST['deleteName'];
-    $deleteQuery = "DELETE FROM catchlogbook WHERE ZoneName = '$logID' AND UserID = '$userid'";
+    $deleteQuery = "DELETE FROM catchlogbook WHERE LogID = '$logID' AND UserID = '$userid'";
     mysqli_query($conn, $deleteQuery);
     if (mysqli_affected_rows($conn) > 0) {
         echo "<script> alert('Entry Deleted Successfully'); </script>";
@@ -46,7 +46,7 @@ if (isset($_POST["update"])) {
     $newDate = $_POST['newDate'];
     $newTime = $_POST['newTime'];
     $newDateTime = $newDate . ' ' . $newTime;
-    $updateQuery = "UPDATE catchlogbook SET Species='$newSpecies', Quantity='$newQuantity', DateTime='$newDateTime' WHERE ZoneName='$logID' AND UserID='$userid'";
+    $updateQuery = "UPDATE catchlogbook SET Species='$newSpecies', Quantity='$newQuantity', DateTime='$newDateTime' WHERE LogID='$logID' AND UserID='$userid'";
     mysqli_query($conn, $updateQuery);
     if (mysqli_affected_rows($conn) > 0) {
         echo "<script> alert('Entry Updated Successfully'); </script>";
@@ -86,6 +86,7 @@ if ($logbookResult && mysqli_num_rows($logbookResult) > 0) {
     </script>
     <style>
         .form-container {
+            margin-top: 5%;
             display: none;
         }
     </style>
@@ -154,14 +155,15 @@ if ($logbookResult && mysqli_num_rows($logbookResult) > 0) {
           </div>
       </nav>
     <main>
-        <h2>Catch Logbook</h2>
-        <label for="actionSelect">Choose an action:</label>
-        <select id="actionSelect" onchange="showForm(this.value)">
-            <option value="">Select an action</option>
-            <option value="zoneForm">Add Entry</option>
-            <option value="deleteForm">Delete Entry</option>
-            <option value="updateForm">Update Entry</option>
-        </select>
+                <h2>Catch Logbook</h2>
+                <br>
+                <label for="actionSelect">Choose an action:</label>
+                <select id="actionSelect" onchange="showForm(this.value)">
+                    <option value="">Select an action</option>
+                    <option value="zoneForm">Add Entry</option>
+                    <option value="deleteForm">Delete Entry</option>
+                    <option value="updateForm">Update Entry</option>
+                </select>
 
         <!-- Add Entry Form -->
         <form id="zoneForm" class="form-container" action="" method="post" autocomplete="off">
@@ -171,10 +173,13 @@ if ($logbookResult && mysqli_num_rows($logbookResult) > 0) {
             <input type="text" id="species" name="species" required><br>
             <label for="quantity">Quantity:</label>
             <input type="number" id="quantity" name="quantity" required><br>
+            <br>
             <label for="date">Date:</label>
             <input type="date" id="date" name="date" required><br>
+            <br>
             <label for="time">Time:</label>
             <input type="time" id="time" name="time" required><br>
+            <br>
             <button type="submit" name="submit">Add Entry</button>
         </form>
 

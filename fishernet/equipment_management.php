@@ -144,14 +144,16 @@ if (isset($_POST["update"])) {
     <main>
         <h2>Maintenance Log</h2>
         <label for="actionSelect">Choose an action:</label>
-        <select id="actionSelect" onchange="showForm(this.value)">
+        <select id="actionSelect" onchange="showForm(this.value)" class="form-select">
             <option value="">Select an action</option>
             <option value="maintenanceForm">Add Maintenance</option>
             <option value="searchForm">Search Equipment</option>
             <option value="updateForm">Maintenance Update</option>
         </select>
 
-        <form id="maintenanceForm" class="form-container" method="post" autocomplete="off">
+        <form id="maintenanceForm" class="maintenance-form form-container" action="" method="post">
+            <h2> Log Maintenance Details</h2>
+            <br>
             <label for="equipmentID">Equipment:</label>
             <select id="equipmentID" name="equipmentID" required>
                 <?php while ($row = mysqli_fetch_assoc($equipmentResult)) { ?>
@@ -173,14 +175,16 @@ if (isset($_POST["update"])) {
 
             <button type="submit" name="submit">Add Maintenance</button>
         </form>
-            <form id="searchForm" class="form-container" method="post" autocomplete="off">
+            <form id="searchForm" class="form-container maintenance-form" action="" method="post">
                 <h2>Search Equipment Maintenance</h2>
+                <br>
                 <label for="searchName">Equipment Name:</label>
                 <input type="text" id="searchName" name="searchName" required><br>
                 <button type="submit" name="search">Search</button>
             </form>
-            <form id="updateForm" class="form-container" method="post" autocomplete="off">
+            <form id="updateForm" class="form-container maintenance-form" action="" method="post">
                 <h2>Update Maintenance Notes</h2>
+                <br>
                 <label for="updateEquipID">Equipment ID:</label>
                 <input type="text" id="updateEquipID" name="updateEquipID" required><br>
                 <label for="updateNotes">New Notes:</label>
@@ -249,7 +253,6 @@ if (!empty($searchResult)) {
     <p>&copy; 2024 Fisherman Website</p>
 </footer>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
-
 </body>
 </html>
 

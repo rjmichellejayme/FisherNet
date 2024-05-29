@@ -92,10 +92,10 @@ if ($userZonesResult && mysqli_num_rows($userZonesResult) > 0) {
     <style>
         .form-container {
             margin-top: 5%;
+            display: none;
         }
     </style>
-
-     <style>
+    <style>
         table {
             width: 100%;
             border-collapse: collapse;
@@ -160,16 +160,17 @@ if ($userZonesResult && mysqli_num_rows($userZonesResult) > 0) {
       </nav>
     <main>
         <h2>Equipments</h2>
+            <label for="actionSelect">Choose an action:</label>
+            <select id="actionSelect" onchange="showForm(this.value)" class="form-select">
+                <option value="">Select an action</option>
+                <option value="equipmentForm">Add Equipment</option>
+                <option value="deleteForm">Delete Equipment</option>
+                <option value="editQuantityForm">Update Equipment</option>
+            </select>
 
-         <label for="actionSelect">Choose an action:</label>
-        <select id="actionSelect" onchange="showForm(this.value)">
-            <option value="">Select an action</option>
-            <option value="equipmentForm">Add Equipment</option>
-            <option value="deleteForm">Delete Equipment</option>
-            <option value="editQuantityForm">Update Equipment</option>
-        </select>
-
-        <form id="equipmentForm" class="equipment-form" action="" method="post">
+        <form id="equipmentForm" class="equipment-form form-container" action="" method="post">
+            <h2>Log Equipment Details</h2>
+            <br>
             <label for="equipmentSelect">Equipment Name:</label>
             <select id="equipmentSelect" name="equipmentSelect" required>
                 <option value="lines">Lines</option>
@@ -190,7 +191,9 @@ if ($userZonesResult && mysqli_num_rows($userZonesResult) > 0) {
         </form>
 
       
-        <form id="editQuantityForm" class="equipment-form" style="display: none;" action="" method="post">
+        <form id="editQuantityForm" class="equipment-form form-container" style="display: none;" action="" method="post">
+            <h2>Edit Equipment Details</h2>
+            <br>
             <label for="editEquipmentName">Equipment Name:</label>
 
             <input type="text" id="editEquipmentName" name="editEquipmentName" required><br>
@@ -200,7 +203,9 @@ if ($userZonesResult && mysqli_num_rows($userZonesResult) > 0) {
              <button type="submit" name="edit" value="edit">Submit</button>
         </form>
 
-        <form id="deleteForm" class="equipment-form" style="display: none;" action="" method="post">
+        <form id="deleteForm" class="equipment-form form-container" style="display: none;" action="" method="post">
+            <h2>Delete Equipment</h2>
+            <br>
             <label for="deleteName">Equipment Name:</label>
             <input type="text" id="deleteName" name="deleteName" required><br><br>
              <button type="submit" name="delete" value="delete">Submit</button>

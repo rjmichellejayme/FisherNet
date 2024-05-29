@@ -85,6 +85,7 @@ if ($userZonesResult && mysqli_num_rows($userZonesResult) > 0) {
     </script>
     <style>
         .form-container {
+            margin-top: 5%;
             display: none;
         }
     </style>
@@ -152,15 +153,17 @@ if ($userZonesResult && mysqli_num_rows($userZonesResult) > 0) {
           </div>
       </nav>
     <main>
-        <h2>Manage Fishing Zones</h2>
-        <label for="actionSelect">Choose an action:</label>
-        <select id="actionSelect" onchange="showForm(this.value)">
-            <option value="">Select an action</option>
-            <option value="zoneForm">Add Zone</option>
-            <option value="searchForm">Search Zone</option>
-            <option value="deleteForm">Delete Zone</option>
-            <option value="updateForm">Update Zone</option>
-        </select>
+            <h2>Manage Fishing Zones</h2>
+            <br>
+            <label for="actionSelect">Choose an action:</label>
+                <select id="actionSelect" onchange="showForm(this.value)">
+                    <option value="">Select an action</option>
+                    <option value="zoneForm">Add Zone</option>
+                    <option value="searchForm">Search Zone</option>
+                    <option value="deleteForm">Delete Zone</option>
+                    <option value="updateForm">Update Zone</option>
+                </select>
+
 
         <form id="zoneForm" class="form-container" action="" method="post" autocomplete="off">
             <h2>Add Zone</h2>
@@ -168,6 +171,7 @@ if ($userZonesResult && mysqli_num_rows($userZonesResult) > 0) {
             <input type="text" id="zoneName" name="zoneName" required><br>
             <label for="zoneDescription">Zone Description:</label>
             <textarea id="zoneDescription" name="zoneDescription" required></textarea><br>
+            <br>
             <button type="submit" name="submit" value="submit">Add Zone</button>
         </form>
 
@@ -204,6 +208,7 @@ if ($userZonesResult && mysqli_num_rows($userZonesResult) > 0) {
 
             <label for="newDescription">New Description:</label>
             <textarea id="newDescription" name="newDescription" required></textarea><br>
+            <br>
             <button type="submit" name="update" value="update">Update Zone</button>
         </form>
 

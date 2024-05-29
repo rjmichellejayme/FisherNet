@@ -20,6 +20,7 @@ h2, h3{
   padding-top: 5%;
   text-align: center;
 }
+
 form {
   background: #ffffff;
   padding-top: 5%;
@@ -191,3 +192,4 @@ table {
 #actionSelect:focus {
   border-color: #007bff;
 }
+
