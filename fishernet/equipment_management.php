@@ -2,6 +2,8 @@
 include 'dbfish.php';
 session_start();
 
+$userid = null;
+
 if (!empty($_SESSION["UserID"])) {
     $userid = $_SESSION["UserID"];
 }

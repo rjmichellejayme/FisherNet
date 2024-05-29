@@ -2,34 +2,32 @@
 include 'dbfish.php';
 session_start();
 
-if(!empty($_SESSION["UserID"])){
+if (!empty($_SESSION["UserID"])) {
     header("location:index_fish.php");
 }
 
-if(isset($_POST["submit"])){
+if (isset($_POST["submit"])) {
     $name = $_POST['username'];
     $email = $_POST['email'];
     $password = $_POST['password'];
     $confirmpassword = $_POST['confirmpassword'];
     $userType = $_POST['userType'];
-    $duplicate = mysqli_query($conn, "SELECT * from users where Username = '$name' OR email = '$email'");
-if(mysqli_num_rows($duplicate)>0){
-    echo "<script> alert('username or Email is Already Taken'); </script>";
-
-}else{
-    if($password == $confirmpassword){
-        $query = "INSERT into users (username, email, password, confirmpassword, usertype) VALUES ('$name', '$email','$password','$confirmpassword', '$userType')";
-        mysqli_query($conn, $query);
-        echo "<script> alert('Registration Successful'); </script>";
-
-    }else{
-        echo "<script> alert('Password Does not Match'); </script>";
-
+    $duplicate = mysqli_query($conn, "SELECT * FROM users WHERE Username = '$name' OR email = '$email'");
+    
+    if (mysqli_num_rows($duplicate) > 0) {
+        echo "<script> alert('Username or Email is Already Taken'); </script>";
+    } else {
+        if ($password == $confirmpassword) {
+            $query = "INSERT INTO users (username, email, password, confirmpassword, usertype) VALUES ('$name', '$email', '$password', '$confirmpassword', '$userType')";
+            mysqli_query($conn, $query);
+            echo "<script> alert('Registration Successful'); </script>";
+        } else {
+            echo "<script> alert('Password Does not Match'); </script>";
+        }
     }
 }
-
-}
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -44,7 +42,7 @@ if(mysqli_num_rows($duplicate)>0){
     </header>
     <br>
     <main>
-        <form class="" action="" method="post" autocomplete="off">
+        <form action="" method="post" autocomplete="off">
             <label for="username">Username:</label>
             <input type="text" id="username" name="username" required value=""><br>
             <label for="email">Email:</label>
@@ -60,7 +58,11 @@ if(mysqli_num_rows($duplicate)>0){
             </select><br>
             
             <input type="submit" name="submit" value="Register">
+            <br>
+        <p>Already have an account? <a href="login.php">Log in</a></p>
+
         </form>
+        
     </main>
     
     <footer>
