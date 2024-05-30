@@ -28,8 +28,8 @@ if (isset($_POST["submit"])) {
 
 // Deleting Entry
 if (isset($_POST["delete"])) {
-    $logID = $_POST['deleteName'];
-    $deleteQuery = "DELETE FROM catchlogbook WHERE LogID = '$logID' AND UserID = '$userid'";
+    $speciesName = $_POST['deleteName']; // Assuming deleteName holds the species name
+    $deleteQuery = "DELETE FROM catchlogbook WHERE Species = '$speciesName' AND UserID = '$userid'";
     mysqli_query($conn, $deleteQuery);
     if (mysqli_affected_rows($conn) > 0) {
         echo "<script> alert('Entry Deleted Successfully'); </script>";
@@ -186,7 +186,7 @@ if ($logbookResult && mysqli_num_rows($logbookResult) > 0) {
         <!-- Delete Entry Form -->
         <form id="deleteForm" class="form-container" action="" method="post" autocomplete="off">
           <h2>Delete</h2>
-            <label for="deleteName">Zone Name:</label>
+            <label for="deleteName">Specie Name:</label>
             <input type="text" id="deleteName" name="deleteName" required><br>
             <button type="submit" name="delete" value="delete">Delete</button>
        

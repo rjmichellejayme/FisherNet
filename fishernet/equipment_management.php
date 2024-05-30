@@ -192,28 +192,7 @@ if (isset($_POST["update"])) {
                 <button type="submit" name="update">Update Notes</button>
             </form>
 
-<?php
-if (!empty($searchResult)) {
-    echo "<table>";
-    echo "<tr><th>Equipment ID</th><th>Equipment Name</th><th>Maintenance Date</th><th>Maintenance Type</th><th>Cost</th><th>Notes</th></tr>";
-    while ($maintenance = mysqli_fetch_assoc($searchResult)) {
-        $equipID = $maintenance['EquipID'];
-        $equipNameQuery = "SELECT EquipName FROM Equipment WHERE EquipID = '$equipID'";
-        $equipNameResult = mysqli_query($conn, $equipNameQuery);
-        $equipName = mysqli_fetch_assoc($equipNameResult)['EquipName'];
 
-        echo "<tr>";
-        echo "<td>" . $maintenance['EquipID']  . "</td>";
-        echo "<td>" . $equipName . "</td>";
-        echo "<td>" . $maintenance['MaintenanceDate'] . "</td>";
-        echo "<td>" . $maintenance['MaintenanceType'] . "</td>";
-        echo "<td>" . $maintenance['Cost'] . "</td>";
-        echo "<td>" . $maintenance['Notes'] . "</td>";
-        echo "</tr>";
-    }
-    echo "</table>";
-} 
-?>
 <h3>Your Equipment Maintenance</h3>
 <table>
     <thead>

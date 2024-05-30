@@ -2,6 +2,8 @@
 include 'dbfish.php';
 session_start();
 
+$userid = null;
+
 if (!empty($_SESSION["UserID"])) {
     $userid = $_SESSION["UserID"];
 }
@@ -45,12 +47,12 @@ if (isset($_POST["delete"])) {
     }
 }
 
-$userZones = [];
-$userZonesQuery = "SELECT * FROM equipment WHERE userID = '$userid'";
-$userZonesResult = mysqli_query($conn, $userZonesQuery);
-if ($userZonesResult && mysqli_num_rows($userZonesResult) > 0) {
-    while ($row = mysqli_fetch_assoc($userZonesResult)) {
-        $userZones[] = $row;
+$userEquipment = [];
+$userEquipmentQuery = "SELECT * FROM equipment WHERE userID = '$userid'";
+$userEquipmentResult = mysqli_query($conn, $userEquipmentQuery);
+if ($userEquipmentResult && mysqli_num_rows($userEquipmentResult) > 0) {
+    while ($row = mysqli_fetch_assoc($userEquipmentResult)) {
+        $userEquipment[] = $row;
     }
 }
 ?>
@@ -212,10 +214,10 @@ if ($userZonesResult && mysqli_num_rows($userZonesResult) > 0) {
         </form>
         <h2>Your Equipments</h2>
         <?php
-        if (!empty($userZones)) {
+        if (!empty($userEquipment)) {
             echo "<table>";
-            echo "<tr><th>Zone Name</th><th>Description</th></tr>";
-            foreach ($userZones as $zone) {
+            echo "<tr><th>Equipment Name</th><th>Quantity</th></tr>";
+            foreach ($userEquipment as $zone) {
                 echo "<tr>";
                 echo "<td>" . $zone['EquipName'] . "</td>";
                 echo "<td>" . $zone['Quantity'] . "</td>";
@@ -223,7 +225,7 @@ if ($userZonesResult && mysqli_num_rows($userZonesResult) > 0) {
             }
             echo "</table>";
         } else {
-            echo "<p>No zones added yet.</p>";
+            echo "<p>No equipment is added yet.</p>";
         }
         ?>
     </main>

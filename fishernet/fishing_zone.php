@@ -182,15 +182,6 @@ if ($userZonesResult && mysqli_num_rows($userZonesResult) > 0) {
             <button type="submit" name="search" value="search">Search</button>
         </form>
 
-        <?php
-        if($searchResult && mysqli_num_rows($searchResult) > 0){
-            $row = mysqli_fetch_assoc($searchResult);
-            echo "<h3>Zone Details</h3>";
-            echo "<p>Zone Name: " . $row['ZoneName'] . "</p>";
-            echo "<p>Description: " . $row['Description'] . "</p>";
-        }
-        ?>
-
         <form id="deleteForm" class="form-container" action="" method="post" autocomplete="off">
             <h2>Delete Zone</h2>
             <label for="deleteName">Zone Name:</label>
