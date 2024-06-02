@@ -56,6 +56,16 @@ if ($userPricesResult && mysqli_num_rows($userPricesResult) > 0) {
         $userPrices[] = $row;
     }
 }
+
+// Fetching User Species
+$userSpecies = [];
+$speciesQuery = "SELECT DISTINCT Species FROM catchlogbook WHERE UserID = '$userid'";
+$speciesResult = mysqli_query($conn, $speciesQuery);
+if ($speciesResult && mysqli_num_rows($speciesResult) > 0) {
+    while ($row = mysqli_fetch_assoc($speciesResult)) {
+        $userSpecies[] = $row['Species'];
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -141,7 +151,12 @@ if ($userPricesResult && mysqli_num_rows($userPricesResult) > 0) {
         <!-- Market Prices Form -->
         <form id="marketPricesForm" action="" method="post">
             <label for="species">Species:</label>
-            <input type="text" id="species" name="species" required><br>
+            <select id="species" name="species" required>
+                <option value="">Select Species</option>
+                <?php foreach ($userSpecies as $species) { ?>
+                    <option value="<?php echo $species; ?>"><?php echo $species; ?></option>
+                <?php } ?>
+            </select><br>
             <label for="marketPrice">Price:</label>
             <input type="number" id="marketPrice" name="marketPrice" step="0.01" required><br>
             <label for="action">Action:</label>

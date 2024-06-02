@@ -44,7 +44,7 @@ if(isset($_POST["delete"])){
 }
 
 if(isset($_POST["update"])){
-    $updateName = $_POST['updateName'];
+    $updateName = $_POST['updateName']; // Retrieve selected zone name from dropdown
     $newZoneName = $_POST['newZoneName'];
     $newDescription = $_POST['newDescription'];
     $updateQuery = "UPDATE fishingzones SET zoneName='$newZoneName', description='$newDescription' WHERE zoneName='$updateName' AND userID='$userid'";
@@ -65,6 +65,7 @@ if ($userZonesResult && mysqli_num_rows($userZonesResult) > 0) {
     }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -153,16 +154,16 @@ if ($userZonesResult && mysqli_num_rows($userZonesResult) > 0) {
           </div>
       </nav>
     <main>
-            <h2>Manage Fishing Zones</h2>
-            <br>
-            <label for="actionSelect">Choose an action:</label>
-                <select id="actionSelect" onchange="showForm(this.value)">
-                    <option value="">Select an action</option>
-                    <option value="zoneForm">Add Zone</option>
-                    <option value="searchForm">Search Zone</option>
-                    <option value="deleteForm">Delete Zone</option>
-                    <option value="updateForm">Update Zone</option>
-                </select>
+        <h2>Manage Fishing Zones</h2>
+        <br>
+        <label for="actionSelect">Choose an action:</label>
+            <select id="actionSelect" onchange="showForm(this.value)">
+                <option value="">Select an action</option>
+                <option value="zoneForm">Add Zone</option>
+                <option value="searchForm">Search Zone</option>
+                <option value="deleteForm">Delete Zone</option>
+                <option value="updateForm">Update Zone</option>
+            </select>
 
 
         <form id="zoneForm" class="form-container" action="" method="post" autocomplete="off">
@@ -185,14 +186,25 @@ if ($userZonesResult && mysqli_num_rows($userZonesResult) > 0) {
         <form id="deleteForm" class="form-container" action="" method="post" autocomplete="off">
             <h2>Delete Zone</h2>
             <label for="deleteName">Zone Name:</label>
-            <input type="text" id="deleteName" name="deleteName" required><br>
+            <select id="deleteName" name="deleteName" required>
+                <option value="">Select Zone Name</option>
+                <?php foreach ($userZones as $zone) { ?>
+                    <option value="<?php echo $zone['ZoneName']; ?>"><?php echo $zone['ZoneName']; ?></option>
+                <?php } ?>
+            </select><br>
             <button type="submit" name="delete" value="delete">Delete</button>
         </form>
+
 
         <form id="updateForm" class="form-container" action="" method="post" autocomplete="off">
             <h2>Update Zone</h2>
             <label for="updateName">Current Zone Name:</label>
-            <input type="text" id="updateName" name="updateName" required><br>
+            <select id="updateName" name="updateName" required>
+                <option value="">Select Zone Name</option>
+                <?php foreach ($userZones as $zone) { ?>
+                    <option value="<?php echo $zone['ZoneName']; ?>"><?php echo $zone['ZoneName']; ?></option>
+                <?php } ?>
+            </select><br>
 
             <label for="newZoneName">New Zone Name:</label>
             <input type="text" id="newZoneName" name="newZoneName" required><br>
@@ -202,6 +214,16 @@ if ($userZonesResult && mysqli_num_rows($userZonesResult) > 0) {
             <br>
             <button type="submit" name="update" value="update">Update Zone</button>
         </form>
+
+        <?php if(isset($_POST["search"]) && $searchResult && mysqli_num_rows($searchResult) > 0): ?>
+            <?php $row = mysqli_fetch_assoc($searchResult); ?>
+            <h3>Zone Details</h3>
+            <p>Zone Name: <?php echo $row['ZoneName']; ?></p>
+            <p>Description: <?php echo $row['Description']; ?></p>
+            <form action="" method="post">
+                <button type="submit" name="done" value="done">Done</button>
+            </form>
+        <?php endif; ?>
 
         <h2>Your Fishing Zones</h2>
         <?php
@@ -219,6 +241,7 @@ if ($userZonesResult && mysqli_num_rows($userZonesResult) > 0) {
             echo "<p>No zones added yet.</p>";
         }
         ?>
+        
     </main>
     <footer>
         <p>&copy; 2024 Fisherman Website</p>

@@ -17,7 +17,7 @@ if (isset($_POST["submit"])) {
     if (mysqli_num_rows($duplicate) > 0) {
         echo "<script> alert('Equipment Already Exists'); </script>";
     } else {
-        $query = "INSERT INTO equipment (equipname, quantity, userid) VALUES ('$eqname', '$quantity', '$userid')";
+        $query = "INSERT INTO equipment (EquipName, quantity, userid) VALUES ('$eqname', '$quantity', '$userid')";
     mysqli_query($conn, $query);
     echo "<script> alert('Equipment Added'); </script>";
     }
@@ -26,7 +26,7 @@ if (isset($_POST["submit"])) {
 if (isset($_POST["edit"])) {
     $eqname = $_POST['editEquipmentName'];
     $newQuantity = $_POST['newQuantity'];
-    $updateQuery = "UPDATE equipment SET quantity='$newQuantity' WHERE equipname='$eqname' AND userid='$userid'";
+    $updateQuery = "UPDATE equipment SET quantity='$newQuantity' WHERE EquipName='$eqname' AND userid='$userid'";
     $updateResult = mysqli_query($conn, $updateQuery);
     if(mysqli_affected_rows($conn) > 0){
         echo "<script> alert('Equipment Updated Successfully'); </script>";
@@ -38,7 +38,7 @@ if (isset($_POST["edit"])) {
 
 if (isset($_POST["delete"])) {
     $deleteName = $_POST['deleteName'];
-    $deleteQuery = "DELETE FROM equipment WHERE equipname = '$deleteName' AND userid='$userid'";
+    $deleteQuery = "DELETE FROM equipment WHERE EquipName = '$deleteName' AND userid='$userid'";
     $deleteResult = mysqli_query($conn, $deleteQuery);
     if(mysqli_affected_rows($conn) > 0){
         echo "<script> alert('Equipment Deleted Successfully'); </script>";
@@ -194,11 +194,15 @@ if ($userEquipmentResult && mysqli_num_rows($userEquipmentResult) > 0) {
 
       
         <form id="editQuantityForm" class="equipment-form form-container" style="display: none;" action="" method="post">
-            <h2>Edit Equipment Details</h2>
+            <h2>Update Equipment Details</h2>
             <br>
             <label for="editEquipmentName">Equipment Name:</label>
-
-            <input type="text" id="editEquipmentName" name="editEquipmentName" required><br>
+            <select id="editEquipmentName" name="editEquipmentName" required>
+                <option value="">Select Equipment</option>
+                <?php foreach ($userEquipment as $equipment): ?>
+                    <option value="<?php echo $equipment['EquipName']; ?>"><?php echo $equipment['EquipName']; ?></option>
+                <?php endforeach; ?>
+            </select><br>
             <label for="newQuantity">New Quantity:</label>
 
             <input type="number" id="newQuantity" name="newQuantity" required><br><br>
@@ -209,9 +213,14 @@ if ($userEquipmentResult && mysqli_num_rows($userEquipmentResult) > 0) {
             <h2>Delete Equipment</h2>
             <br>
             <label for="deleteName">Equipment Name:</label>
-            <input type="text" id="deleteName" name="deleteName" required><br><br>
+            <select id="deleteName" name="deleteName" required>
+                <?php foreach ($userEquipment as $equipment): ?>
+                    <option value="<?php echo $equipment['EquipName']; ?>"><?php echo $equipment['EquipName']; ?></option>
+                <?php endforeach; ?>
+            </select><br><br>
              <button type="submit" name="delete" value="delete">Submit</button>
         </form>
+        
         <h2>Your Equipments</h2>
         <?php
         if (!empty($userEquipment)) {

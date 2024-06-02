@@ -52,6 +52,9 @@ if (isset($_POST["update"])) {
     }
 }
 
+$userMaintenanceQuery = "SELECT * FROM maintenancelog WHERE EquipID IN (SELECT EquipID FROM Equipment WHERE UserID = '$userid')";
+$userMaintenanceResult = mysqli_query($conn, $userMaintenanceQuery);
+
 ?>
 
 <!DOCTYPE html>
@@ -142,7 +145,7 @@ if (isset($_POST["update"])) {
       </nav>
 
     <main>
-        <h2>Maintenance Log</h2>
+    <h2>Maintenance Log</h2>
         <label for="actionSelect">Choose an action:</label>
         <select id="actionSelect" onchange="showForm(this.value)" class="form-select">
             <option value="">Select an action</option>
@@ -175,64 +178,65 @@ if (isset($_POST["update"])) {
 
             <button type="submit" name="submit">Add Maintenance</button>
         </form>
-            <form id="searchForm" class="form-container maintenance-form" action="" method="post">
-                <h2>Search Equipment Maintenance</h2>
-                <br>
-                <label for="searchName">Equipment Name:</label>
-                <input type="text" id="searchName" name="searchName" required><br>
-                <button type="submit" name="search">Search</button>
-            </form>
-            <form id="updateForm" class="form-container maintenance-form" action="" method="post">
-                <h2>Update Maintenance Notes</h2>
-                <br>
-                <label for="updateEquipID">Equipment ID:</label>
-                <input type="text" id="updateEquipID" name="updateEquipID" required><br>
-                <label for="updateNotes">New Notes:</label>
-                <textarea id="updateNotes" name="updateNotes" required></textarea><br>
-                <button type="submit" name="update">Update Notes</button>
-            </form>
 
+        <form id="searchForm" class="form-container maintenance-form" action="" method="post">
+            <h2>Search Equipment Maintenance</h2>
+            <br>
+            <label for="searchName">Equipment Name:</label>
+            <input type="text" id="searchName" name="searchName" required><br>
+            <button type="submit" name="search">Search</button>
+        </form>
 
-<h3>Your Equipment Maintenance</h3>
-<table>
-    <thead>
-        <tr>
-            <th>Equipment ID</th>
-            <th>Equipment Name</th>
-            <th>Maintenance Date</th>
-            <th>Maintenance Type</th>
-            <th>Cost</th>
-            <th>Notes</th>
-        </tr>
-    </thead>
-    <tbody>
-        <?php
-        $userMaintenanceQuery = "SELECT * FROM maintenancelog WHERE EquipID IN (SELECT EquipID FROM Equipment WHERE UserID = '$userid')";
-        $userMaintenanceResult = mysqli_query($conn, $userMaintenanceQuery);
-        while ($maintenanceEntry = mysqli_fetch_assoc($userMaintenanceResult)) {
-            $equipID = $maintenanceEntry['EquipID'];
-            $equipNameQuery = "SELECT EquipName FROM Equipment WHERE EquipID = '$equipID'";
-            $equipNameResult = mysqli_query($conn, $equipNameQuery);
-            $equipName = mysqli_fetch_assoc($equipNameResult)['EquipName'];
+        <form id="updateForm" class="form-container maintenance-form" action="" method="post">
+            <h2>Update Maintenance Notes</h2>
+            <br>
+            <label for="updateEquipID">Equipment:</label>
+            <select id="updateEquipID" name="updateEquipID" required>
+                <?php
+                $equipmentResult = mysqli_query($conn, $equipmentQuery);
+                while ($row = mysqli_fetch_assoc($equipmentResult)) { ?>
+                    <option value="<?php echo $row['EquipID']; ?>"><?php echo $row['EquipName']; ?></option>
+                <?php } ?>
+            </select><br>
+            <label for="updateNotes">New Notes:</label>
+            <textarea id="updateNotes" name="updateNotes" required></textarea><br>
+            <button type="submit" name="update">Update Notes</button>
+        </form>
 
-            echo "<tr>";
-            echo "<td>" . $maintenanceEntry['EquipID']  . "</td>";
-            echo "<td>" . $equipName . "</td>";
-            echo "<td>" . $maintenanceEntry['MaintenanceDate'] . "</td>";
-            echo "<td>" . $maintenanceEntry['MaintenanceType'] . "</td>";
-            echo "<td>" . $maintenanceEntry['Cost'] . "</td>";
-            echo "<td>" . $maintenanceEntry['Notes'] . "</td>";
-            echo "</tr>";
-        }
-        ?>
-    </tbody>
-</table>
-</main>
-<footer>
-    <p>&copy; 2024 Fisherman Website</p>
-</footer>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
+        <h3>Your Equipment Maintenance</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Equipment ID</th>
+                    <th>Equipment Name</th>
+                    <th>Maintenance Date</th>
+                    <th>Maintenance Type</th>
+                    <th>Cost</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php while ($maintenanceEntry = mysqli_fetch_assoc($userMaintenanceResult)) {
+                    $equipID = $maintenanceEntry['EquipID'];
+                    $equipNameQuery = "SELECT EquipName FROM Equipment WHERE EquipID = '$equipID'";
+                    $equipNameResult = mysqli_query($conn, $equipNameQuery);
+                    $equipName = mysqli_fetch_assoc($equipNameResult)['EquipName'];
+
+                    echo "<tr>";
+                    echo "<td>" . $maintenanceEntry['EquipID']  . "</td>";
+                    echo "<td>" . $equipName . "</td>";
+                    echo "<td>" . $maintenanceEntry['MaintenanceDate'] . "</td>";
+                    echo "<td>" . $maintenanceEntry['MaintenanceType'] . "</td>";
+                    echo "<td>" . $maintenanceEntry['Cost'] . "</td>";
+                    echo "<td>" . $maintenanceEntry['Notes'] . "</td>";
+                    echo "</tr>";
+                } ?>
+            </tbody>
+        </table>
+    </main>
+    <footer>
+        <p>&copy; 2024 Fisherman Website</p>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
 </body>
 </html>
-
-       

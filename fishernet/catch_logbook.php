@@ -10,17 +10,17 @@ if (!empty($_SESSION["UserID"])) {
 
 // Adding Entry
 if (isset($_POST["submit"])) {
-    $zonename = $_POST['zonename'];
+    $zoneName = $_POST['zoneName'];
     $species = $_POST['species'];
     $quantity = $_POST['quantity'];
     $date = $_POST['date'];
     $time = $_POST['time'];
     $datetime = $date . ' ' . $time;
-    $zone_check = mysqli_query($conn, "SELECT * FROM fishingzones WHERE ZoneName = '$zonename'");
+    $zone_check = mysqli_query($conn, "SELECT * FROM fishingzones WHERE ZoneName = '$zoneName'");
     if (mysqli_num_rows($zone_check) == 0) {
         echo "<script> alert('Invalid Zone Name'); </script>";
     } else {
-        $query = "INSERT INTO catchlogbook (ZoneName, Species, Quantity, DateTime, UserID) VALUES ('$zonename', '$species','$quantity','$datetime', '$userid')";
+        $query = "INSERT INTO catchlogbook (ZoneName, Species, Quantity, DateTime, UserID) VALUES ('$zoneName', '$species','$quantity','$datetime', '$userid')";
         mysqli_query($conn, $query);
         echo "<script> alert('Added Successfully'); </script>";
     }
@@ -40,18 +40,37 @@ if (isset($_POST["delete"])) {
 
 // Updating Entry
 if (isset($_POST["update"])) {
-    $logID = $_POST['zonename'];
+    $zoneName = $_POST['zoneName'];
     $newSpecies = $_POST['newSpecies'];
     $newQuantity = $_POST['newQuantity'];
     $newDate = $_POST['newDate'];
     $newTime = $_POST['newTime'];
     $newDateTime = $newDate . ' ' . $newTime;
-    $updateQuery = "UPDATE catchlogbook SET Species='$newSpecies', Quantity='$newQuantity', DateTime='$newDateTime' WHERE LogID='$logID' AND UserID='$userid'";
+    $updateQuery = "UPDATE catchlogbook SET Species='$newSpecies', Quantity='$newQuantity', DateTime='$newDateTime' WHERE zoneName='$zoneName' AND UserID='$userid'";
     mysqli_query($conn, $updateQuery);
     if (mysqli_affected_rows($conn) > 0) {
         echo "<script> alert('Entry Updated Successfully'); </script>";
     } else {
         echo "<script> alert('No Entry Found to Update'); </script>";
+    }
+}
+
+// Fetching User Species
+$userSpecies = [];
+$speciesQuery = "SELECT DISTINCT Species FROM catchlogbook WHERE UserID = '$userid'";
+$speciesResult = mysqli_query($conn, $speciesQuery);
+if ($speciesResult && mysqli_num_rows($speciesResult) > 0) {
+    while ($row = mysqli_fetch_assoc($speciesResult)) {
+        $userSpecies[] = $row['Species'];
+    }
+}
+
+$userZones = [];
+$userZonesQuery = "SELECT * FROM fishingzones WHERE userID = '$userid'";
+$userZonesResult = mysqli_query($conn, $userZonesQuery);
+if ($userZonesResult && mysqli_num_rows($userZonesResult) > 0) {
+    while ($row = mysqli_fetch_assoc($userZonesResult)) {
+        $userZones[] = $row;
     }
 }
 
@@ -65,6 +84,8 @@ if ($logbookResult && mysqli_num_rows($logbookResult) > 0) {
     }
 }
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -155,20 +176,25 @@ if ($logbookResult && mysqli_num_rows($logbookResult) > 0) {
           </div>
       </nav>
     <main>
-                <h2>Catch Logbook</h2>
-                <br>
-                <label for="actionSelect">Choose an action:</label>
-                <select id="actionSelect" onchange="showForm(this.value)">
-                    <option value="">Select an action</option>
-                    <option value="zoneForm">Add Entry</option>
-                    <option value="deleteForm">Delete Entry</option>
-                    <option value="updateForm">Update Entry</option>
-                </select>
+        <h2>Catch Logbook</h2>
+        <br>
+        <label for="actionSelect">Choose an action:</label>
+        <select id="actionSelect" onchange="showForm(this.value)">
+            <option value="">Select an action</option>
+            <option value="zoneForm">Add Entry</option>
+            <option value="deleteForm">Delete Entry</option>
+            <option value="updateForm">Update Entry</option>
+        </select>
 
-        <!-- Add Entry Form -->
+                <!-- Add Entry Form -->
         <form id="zoneForm" class="form-container" action="" method="post" autocomplete="off">
-            <label for="zonename">Zone Name:</label>
-            <input type="text" id="zonename" name="zonename" required><br>
+            <label for="zoneName">Zone Name:</label>
+            <select id="zoneName" name="zoneName" required>
+                <option value="">Select Zone Name</option>
+                <?php foreach ($userZones as $zone) { ?>
+                    <option value="<?php echo $zone['ZoneName']; ?>"><?php echo $zone['ZoneName']; ?></option>
+                <?php } ?>
+            </select><br>
             <label for="species">Species:</label>
             <input type="text" id="species" name="species" required><br>
             <label for="quantity">Quantity:</label>
@@ -187,16 +213,31 @@ if ($logbookResult && mysqli_num_rows($logbookResult) > 0) {
         <form id="deleteForm" class="form-container" action="" method="post" autocomplete="off">
           <h2>Delete</h2>
             <label for="deleteName">Specie Name:</label>
-            <input type="text" id="deleteName" name="deleteName" required><br>
+            <select id="deleteName" name="deleteName" required>
+                <option value="">Select Species</option>
+                <?php foreach ($userSpecies as $species) { ?>
+                    <option value="<?php echo $species; ?>"><?php echo $species; ?></option>
+                <?php } ?>
+            </select><br>
             <button type="submit" name="delete" value="delete">Delete</button>
-       
         </form>
+        
         <form id="updateForm" class="form-container" action="" method="post" autocomplete="off">
             <h2>Update Entry</h2>
-          <label for="zonename">Zone Name:</label>
-            <input type="text" id="zonename" name="zonename" required><br>
-            <label for="newSpecies">New Species:</label>
-            <input type="text" id="newSpecies" name="newSpecies" required><br>
+          <label for="zoneName">Zone Name:</label>
+            <select id="zoneName" name="zoneName" required>
+                <option value="">Select Zone Name</option>
+                <?php foreach ($userZones as $zone) { ?>
+                    <option value="<?php echo $zone['ZoneName']; ?>"><?php echo $zone['ZoneName']; ?></option>
+                <?php } ?>
+            </select><br>
+            <label for="newSpecies">Species:</label>
+            <select id="newSpecies" name="newSpecies" required>
+                <option value="">Select Species</option>
+                <?php foreach ($userSpecies as $species) { ?>
+                    <option value="<?php echo $species; ?>"><?php echo $species; ?></option>
+                <?php } ?>
+            </select><br>
             <label for="newQuantity">New Quantity:</label>
             <input type="number" id="newQuantity" name="newQuantity" required><br>
             <label for="newDate">New Date:</label>
