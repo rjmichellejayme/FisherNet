@@ -33,28 +33,46 @@ if(isset($_POST["search"])){
 }
 
 if(isset($_POST["delete"])){
-    $deleteName = $_POST['deleteName'];
-    $deleteQuery = "DELETE FROM fishingzones WHERE zoneName = '$deleteName'";
-    $deleteResult = mysqli_query($conn, $deleteQuery);
-    if(mysqli_affected_rows($conn) > 0){
-        echo "<script> alert('Zone Deleted Successfully'); </script>";
+    $zoneName = $_POST['deleteName'];
+    $deleteLogbookQuery = "DELETE FROM CatchLogbook WHERE ZoneName = '$zoneName'";
+    $deleteLogbookResult = mysqli_query($conn, $deleteLogbookQuery);
+
+    if ($deleteLogbookResult) {
+     $deleteZoneQuery = "DELETE FROM FishingZones WHERE ZoneName = '$zoneName' AND UserID = '$userid'";
+        $deleteZoneResult = mysqli_query($conn, $deleteZoneQuery);
+
+        if ($deleteZoneResult) {
+            echo "<script> alert('Zone Deleted Successfully'); </script>";
+        } else {
+            echo "<script> alert('Error deleting zone: " . mysqli_error($conn) . "'); </script>";
+        }
     } else {
-        echo "<script> alert('No Zone Found to Delete'); </script>";
+        echo "<script> alert('Error deleting associated logbook entries: " . mysqli_error($conn) . "'); </script>";
     }
 }
 
-if(isset($_POST["update"])){
-    $updateName = $_POST['updateName']; // Retrieve selected zone name from dropdown
+if (isset($_POST["update"])) {
+    $zoneName = $_POST['updateName'];
     $newZoneName = $_POST['newZoneName'];
-    $newDescription = $_POST['newDescription'];
-    $updateQuery = "UPDATE fishingzones SET zoneName='$newZoneName', description='$newDescription' WHERE zoneName='$updateName' AND userID='$userid'";
-    $updateResult = mysqli_query($conn, $updateQuery);
-    if(mysqli_affected_rows($conn) > 0){
-        echo "<script> alert('Zone Updated Successfully'); </script>";
+    $updateZoneQuery = "UPDATE FishingZones SET ZoneName = '$newZoneName' WHERE ZoneName = '$zoneName' ";
+    $updateZoneResult = mysqli_query($conn, $updateZoneQuery);
+
+    if ($updateZoneResult) {
+        $updateLogbookQuery = "UPDATE CatchLogbook SET ZoneName = '$newZoneName' WHERE ZoneName = '$zoneName' AND UserID = '$userid'";
+        $updateLogbookResult = mysqli_query($conn, $updateLogbookQuery);
+
+        if ($updateLogbookResult) {
+            echo "<script> alert('Zone Updated Successfully'); </script>";
+        } else {
+            echo "<script> alert('Error updating logbook: " . mysqli_error($conn) . "'); </script>";
+        }
     } else {
-        echo "<script> alert('No Zone Found to Update'); </script>";
+        echo "<script> alert('Error updating zone: " . mysqli_error($conn) . "'); </script>";
     }
 }
+
+
+
 
 $userZones = [];
 $userZonesQuery = "SELECT * FROM fishingzones WHERE userID = '$userid'";

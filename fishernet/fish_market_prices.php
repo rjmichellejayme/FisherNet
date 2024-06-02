@@ -9,7 +9,6 @@ if (!empty($_SESSION["UserID"])) {
     exit();
 }
 
-// Form Submission Handling
 if (isset($_POST["submit"])) {
     $price = $_POST['marketPrice'];
     $species = $_POST['species'];
@@ -57,7 +56,6 @@ if ($userPricesResult && mysqli_num_rows($userPricesResult) > 0) {
     }
 }
 
-// Fetching User Species
 $userSpecies = [];
 $speciesQuery = "SELECT DISTINCT Species FROM catchlogbook WHERE UserID = '$userid'";
 $speciesResult = mysqli_query($conn, $speciesQuery);
@@ -145,50 +143,58 @@ if ($speciesResult && mysqli_num_rows($speciesResult) > 0) {
           </div>
       </nav>
 
-    <main>
-        <h2>Fish Market Prices</h2>
+   <main>
+    <h2>Fish Market Prices</h2>
 
-        <!-- Market Prices Form -->
-        <form id="marketPricesForm" action="" method="post">
-            <label for="species">Species:</label>
-            <select id="species" name="species" required>
-                <option value="">Select Species</option>
-                <?php foreach ($userSpecies as $species) { ?>
-                    <option value="<?php echo $species; ?>"><?php echo $species; ?></option>
-                <?php } ?>
-            </select><br>
-            <label for="marketPrice">Price:</label>
-            <input type="number" id="marketPrice" name="marketPrice" step="0.01" required><br>
-            <label for="action">Action:</label>
-            <select id="action" name="action" required>
-                <option value="update">Update</option>
-                <option value="add">Add</option>
-            </select><br>
-            <button type="submit" name="submit">Submit</button>
-        </form>
+    <form id="marketPricesForm" action="" method="post">
+        <label for="species">Species:</label>
+        <select id="species" name="species" required>
+            <option value="">Select Species</option>
+            <?php foreach ($userSpecies as $species) { ?>
+                <option value="<?php echo $species; ?>"><?php echo $species; ?></option>
+            <?php } ?>
+        </select><br>
+        <label for="marketPrice">Price:</label>
+        <input type="number" id="marketPrice" name="marketPrice" step="0.01" required><br>
+        <label for="action">Action:</label>
+        <select id="action" name="action" required>
+            <option value="update">Update</option>
+            <option value="add">Add</option>
+        </select><br>
+        <button type="submit" name="submit">Submit</button>
+    </form>
 
-        <!-- Display User's Market Prices -->
-        <h3>Your Market Prices</h3>
-        <table>
-            <thead>
+    <h3>Your Market Prices</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Species</th>
+                <th>Market Price</th>
+                <th>Price Date</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($userPrices as $priceEntry) { ?>
                 <tr>
-                    <th>Species</th>
-                    <th>Market Price</th>
-                    <th>Price Date</th>
+                    <td><?php echo $priceEntry['Species']; ?></td>
+                    <td><?php echo $priceEntry['MarketPrice']; ?></td>
+                    <td><?php echo $priceEntry['PriceDate']; ?></td>
+                    <td>
+                        <form action="" method="post">
+                            <input type="hidden" name="deleteName" value="<?php echo $priceEntry['Species']; ?>">
+                            <select name="deleteAction">
+                                <option value="delete">Delete</option>
+                            </select>
+                            <button type="submit" name="delete">Delete</button>
+                        </form>
+                    </td>
                 </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($userPrices as $priceEntry) { ?>
-                    <tr>
-                        <td><?php echo $priceEntry['Species']; ?></td>
-                        <td><?php echo $priceEntry['MarketPrice']; ?></td>
-                        <td><?php echo $priceEntry['PriceDate']; ?></td>
-                        
-                    </tr>
-                <?php } ?>
-            </tbody>
-        </table>
-    </main>
+            <?php } ?>
+        </tbody>
+    </table>
+</main>
+
     <footer>
         <p>&copy; 2024 Fisherman Website</p>
     </footer>
