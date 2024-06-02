@@ -6,9 +6,11 @@ $userid = null;
 
 if (!empty($_SESSION["UserID"])) {
     $userid = $_SESSION["UserID"];
+} else {
+    echo "<script> alert('Please log in first.'); window.location.href='login.php'; </script>";
+    exit();
 }
 
-// Adding Entry
 if (isset($_POST["submit"])) {
     $zoneName = $_POST['zoneName'];
     $species = $_POST['species'];
@@ -16,7 +18,7 @@ if (isset($_POST["submit"])) {
     $date = $_POST['date'];
     $time = $_POST['time'];
     $datetime = $date . ' ' . $time;
-    $zone_check = mysqli_query($conn, "SELECT * FROM fishingzones WHERE ZoneName = '$zoneName'");
+    $zone_check = mysqli_query($conn, "SELECT * FROM fishingzones WHERE ZoneName = '$zoneName' AND UserID = '$userid'");
     if (mysqli_num_rows($zone_check) == 0) {
         echo "<script> alert('Invalid Zone Name'); </script>";
     } else {
@@ -26,10 +28,9 @@ if (isset($_POST["submit"])) {
     }
 }
 
-// Deleting Entry
 if (isset($_POST["delete"])) {
-    $speciesName = $_POST['deleteName']; // Assuming deleteName holds the species name
-    $deleteQuery = "DELETE FROM catchlogbook WHERE Species = '$speciesName' AND UserID = '$userid'";
+    $logID = $_POST['logID'];
+    $deleteQuery = "DELETE FROM catchlogbook WHERE LogID = '$logID' AND UserID = '$userid'";
     mysqli_query($conn, $deleteQuery);
     if (mysqli_affected_rows($conn) > 0) {
         echo "<script> alert('Entry Deleted Successfully'); </script>";
@@ -38,15 +39,14 @@ if (isset($_POST["delete"])) {
     }
 }
 
-// Updating Entry
 if (isset($_POST["update"])) {
-    $zoneName = $_POST['zoneName'];
+    $logID = $_POST['logID'];
     $newSpecies = $_POST['newSpecies'];
     $newQuantity = $_POST['newQuantity'];
     $newDate = $_POST['newDate'];
     $newTime = $_POST['newTime'];
     $newDateTime = $newDate . ' ' . $newTime;
-    $updateQuery = "UPDATE catchlogbook SET Species='$newSpecies', Quantity='$newQuantity', DateTime='$newDateTime' WHERE zoneName='$zoneName' AND UserID='$userid'";
+    $updateQuery = "UPDATE catchlogbook SET Species='$newSpecies', Quantity='$newQuantity', DateTime='$newDateTime' WHERE LogID='$logID' AND UserID='$userid'";
     mysqli_query($conn, $updateQuery);
     if (mysqli_affected_rows($conn) > 0) {
         echo "<script> alert('Entry Updated Successfully'); </script>";
@@ -55,7 +55,6 @@ if (isset($_POST["update"])) {
     }
 }
 
-// Fetching User Species
 $userSpecies = [];
 $speciesQuery = "SELECT DISTINCT Species FROM catchlogbook WHERE UserID = '$userid'";
 $speciesResult = mysqli_query($conn, $speciesQuery);
@@ -66,15 +65,14 @@ if ($speciesResult && mysqli_num_rows($speciesResult) > 0) {
 }
 
 $userZones = [];
-$userZonesQuery = "SELECT * FROM fishingzones WHERE userID = '$userid'";
+$userZonesQuery = "SELECT DISTINCT ZoneName FROM fishingzones WHERE UserID = '$userid'";
 $userZonesResult = mysqli_query($conn, $userZonesQuery);
 if ($userZonesResult && mysqli_num_rows($userZonesResult) > 0) {
     while ($row = mysqli_fetch_assoc($userZonesResult)) {
-        $userZones[] = $row;
+        $userZones[] = $row['ZoneName'];
     }
 }
 
-// Fetching Logbook Entries
 $logbookEntries = [];
 $logbookQuery = "SELECT * FROM catchlogbook WHERE UserID = '$userid'";
 $logbookResult = mysqli_query($conn, $logbookQuery);
@@ -84,8 +82,6 @@ if ($logbookResult && mysqli_num_rows($logbookResult) > 0) {
     }
 }
 ?>
-
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -131,7 +127,6 @@ if ($logbookResult && mysqli_num_rows($logbookResult) > 0) {
             background-color: #f9f9f9;
         }
     </style>
-</head>
 </head>
 <body>
     <header>
@@ -186,13 +181,12 @@ if ($logbookResult && mysqli_num_rows($logbookResult) > 0) {
             <option value="updateForm">Update Entry</option>
         </select>
 
-                <!-- Add Entry Form -->
         <form id="zoneForm" class="form-container" action="" method="post" autocomplete="off">
             <label for="zoneName">Zone Name:</label>
             <select id="zoneName" name="zoneName" required>
                 <option value="">Select Zone Name</option>
                 <?php foreach ($userZones as $zone) { ?>
-                    <option value="<?php echo $zone['ZoneName']; ?>"><?php echo $zone['ZoneName']; ?></option>
+                    <option value="<?php echo $zone; ?>"><?php echo $zone; ?></option>
                 <?php } ?>
             </select><br>
             <label for="species">Species:</label>
@@ -209,35 +203,27 @@ if ($logbookResult && mysqli_num_rows($logbookResult) > 0) {
             <button type="submit" name="submit">Add Entry</button>
         </form>
 
-        <!-- Delete Entry Form -->
         <form id="deleteForm" class="form-container" action="" method="post" autocomplete="off">
-          <h2>Delete</h2>
-            <label for="deleteName">Specie Name:</label>
-            <select id="deleteName" name="deleteName" required>
-                <option value="">Select Species</option>
-                <?php foreach ($userSpecies as $species) { ?>
-                    <option value="<?php echo $species; ?>"><?php echo $species; ?></option>
+            <label for="logID">Log ID:</label>
+            <select id="logID" name="logID" required>
+                <option value="">Select Log ID</option>
+                <?php foreach ($logbookEntries as $entry) { ?>
+                    <option value="<?php echo $entry['LogID']; ?>"><?php echo $entry['LogID'] . " - " . $entry['ZoneName'] . " - " . $entry['Species']; ?></option>
                 <?php } ?>
             </select><br>
-            <button type="submit" name="delete" value="delete">Delete</button>
+            <button type="submit" name="delete">Delete Entry</button>
         </form>
-        
+
         <form id="updateForm" class="form-container" action="" method="post" autocomplete="off">
-            <h2>Update Entry</h2>
-          <label for="zoneName">Zone Name:</label>
-            <select id="zoneName" name="zoneName" required>
-                <option value="">Select Zone Name</option>
-                <?php foreach ($userZones as $zone) { ?>
-                    <option value="<?php echo $zone['ZoneName']; ?>"><?php echo $zone['ZoneName']; ?></option>
+            <label for="logID">Log ID:</label>
+            <select id="logID" name="logID" required>
+                <option value="">Select Log ID</option>
+                <?php foreach ($logbookEntries as $entry) { ?>
+                    <option value="<?php echo $entry['LogID']; ?>"><?php echo $entry['LogID'] . " - " . $entry['ZoneName'] . " - " . $entry['Species']; ?></option>
                 <?php } ?>
             </select><br>
-            <label for="newSpecies">Species:</label>
-            <select id="newSpecies" name="newSpecies" required>
-                <option value="">Select Species</option>
-                <?php foreach ($userSpecies as $species) { ?>
-                    <option value="<?php echo $species; ?>"><?php echo $species; ?></option>
-                <?php } ?>
-            </select><br>
+            <label for="newSpecies">New Species:</label>
+            <input type="text" id="newSpecies" name="newSpecies" required><br>
             <label for="newQuantity">New Quantity:</label>
             <input type="number" id="newQuantity" name="newQuantity" required><br>
             <label for="newDate">New Date:</label>
@@ -247,9 +233,6 @@ if ($logbookResult && mysqli_num_rows($logbookResult) > 0) {
             <button type="submit" name="update">Update Entry</button>
         </form>
 
-        </form>
-
-        <!-- Logbook Entries Table -->
         <h2>Logbook Entries</h2>
         <?php
         if (!empty($logbookEntries)) {
@@ -261,8 +244,8 @@ if ($logbookResult && mysqli_num_rows($logbookResult) > 0) {
                 echo "<td>" . $entry['ZoneName'] . "</td>";
                 echo "<td>" . $entry['Species'] . "</td>";
                 echo "<td>" . $entry['Quantity'] . "</td>";
-                echo "<td>" . $entry['DateTime'] . "</td>";               
-                echo "</form>";
+                echo "<td>" . $entry['DateTime'] . "</td>";
+                echo "</tr>";
             }
             echo "</table>";
         } else {
