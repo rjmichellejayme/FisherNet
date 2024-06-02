@@ -18,18 +18,21 @@ if (isset($_POST["submit"])) {
     $maintenanceDate = $_POST['maintenanceDate'];
     $maintenanceCost = $_POST['maintenanceCost'];
 
-    $duplicate = mysqli_query($conn, "SELECT * FROM maintenancelog WHERE EquipID = '$equipmentID'");
-    if (mysqli_num_rows($duplicate) > 0) {
-        echo "<script> alert('Maintenance Already Exists'); </script>";
+    $checkMaintenanceQuery = "SELECT * FROM maintenancelog WHERE EquipID = '$equipmentID' AND MaintenanceDate = '$maintenanceDate'";
+    $checkMaintenanceResult = mysqli_query($conn, $checkMaintenanceQuery);
+
+    if (mysqli_num_rows($checkMaintenanceResult) > 0) {
+        echo "<script> alert('The equipment is not available on the selected date'); </script>";
     } else {
         $query = "INSERT INTO maintenancelog (EquipID, MaintenanceDate, MaintenanceType, Cost, Notes) VALUES ('$equipmentID', '$maintenanceDate', '$maintenanceType', '$maintenanceCost', '$description')";
         if (mysqli_query($conn, $query)) {
-            echo "<script> alert('Added Successfully'); </script>";
+            echo "<script> alert('Maintenance Added Successfully'); </script>";
         } else {
             echo "<script> alert('Error: " . mysqli_error($conn) . "'); </script>";
         }
     }
 }
+
 
 $searchResult = null;
 if (isset($_POST["search"])) {
@@ -44,13 +47,20 @@ if (isset($_POST["update"])) {
     $updateEquipID = $_POST['updateEquipID'];
     $updateNotes = $_POST['updateNotes'];
 
-    $updateQuery = "UPDATE maintenancelog SET Notes = '$updateNotes' WHERE EquipID = '$updateEquipID'";
-    if (mysqli_query($conn, $updateQuery)) {
-        echo "<script> alert('Notes Updated Successfully'); </script>";
+    $checkEquipQuery = "SELECT EquipID FROM maintenancelog WHERE EquipID = '$updateEquipID'";
+    $checkEquipResult = mysqli_query($conn, $checkEquipQuery);
+    if (mysqli_num_rows($checkEquipResult) > 0) {
+        $updateQuery = "UPDATE maintenancelog SET Notes = '$updateNotes' WHERE EquipID = '$updateEquipID'";
+        if (mysqli_query($conn, $updateQuery)) {
+            echo "<script> alert('Notes Updated Successfully'); </script>";
+        } else {
+            echo "<script> alert('Error updating notes: " . mysqli_error($conn) . "'); </script>";
+        }
     } else {
-        echo "<script> alert('Error updating notes: " . mysqli_error($conn) . "'); </script>";
+            echo "<script> alert('Equipment not found'); </script>";
     }
 }
+
 
 $userMaintenanceQuery = "SELECT * FROM maintenancelog WHERE EquipID IN (SELECT EquipID FROM Equipment WHERE UserID = '$userid')";
 $userMaintenanceResult = mysqli_query($conn, $userMaintenanceQuery);

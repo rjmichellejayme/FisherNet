@@ -41,12 +41,11 @@ if (isset($_POST["delete"])) {
 
 if (isset($_POST["update"])) {
     $logID = $_POST['logID'];
-    $newSpecies = $_POST['newSpecies'];
     $newQuantity = $_POST['newQuantity'];
     $newDate = $_POST['newDate'];
     $newTime = $_POST['newTime'];
     $newDateTime = $newDate . ' ' . $newTime;
-    $updateQuery = "UPDATE catchlogbook SET Species='$newSpecies', Quantity='$newQuantity', DateTime='$newDateTime' WHERE LogID='$logID' AND UserID='$userid'";
+    $updateQuery = "UPDATE catchlogbook SET Quantity='$newQuantity', DateTime='$newDateTime' WHERE LogID='$logID' AND UserID='$userid'";
     mysqli_query($conn, $updateQuery);
     if (mysqli_affected_rows($conn) > 0) {
         echo "<script> alert('Entry Updated Successfully'); </script>";
@@ -222,8 +221,6 @@ if ($logbookResult && mysqli_num_rows($logbookResult) > 0) {
                     <option value="<?php echo $entry['LogID']; ?>"><?php echo $entry['LogID'] . " - " . $entry['ZoneName'] . " - " . $entry['Species']; ?></option>
                 <?php } ?>
             </select><br>
-            <label for="newSpecies">New Species:</label>
-            <input type="text" id="newSpecies" name="newSpecies" required><br>
             <label for="newQuantity">New Quantity:</label>
             <input type="number" id="newQuantity" name="newQuantity" required><br>
             <label for="newDate">New Date:</label>
