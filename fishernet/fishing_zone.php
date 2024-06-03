@@ -200,6 +200,25 @@ if ($userZonesResult && mysqli_num_rows($userZonesResult) > 0) {
             <input type="text" id="searchName" name="searchName" required><br>
             <button type="submit" name="search" value="search">Search</button>
         </form>
+         <?php if ($searchResult && mysqli_num_rows($searchResult) > 0) { ?>
+         <h3>Search Results</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Zone Name</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php while ($entry = mysqli_fetch_assoc($searchResult)) { ?>
+                    <tr>
+                        <td><?php echo $entry['ZoneName']; ?></td>
+                        <td><?php echo $entry['Description']; ?></td>
+                    </tr>
+                <?php } ?>
+            </tbody>
+        </table>
+        <?php } ?>
 
         <form id="deleteForm" class="form-container" action="" method="post" autocomplete="off">
             <h2>Delete Zone</h2>
@@ -232,16 +251,6 @@ if ($userZonesResult && mysqli_num_rows($userZonesResult) > 0) {
             <br>
             <button type="submit" name="update" value="update">Update Zone</button>
         </form>
-
-        <?php if(isset($_POST["search"]) && $searchResult && mysqli_num_rows($searchResult) > 0): ?>
-            <?php $row = mysqli_fetch_assoc($searchResult); ?>
-            <h3>Zone Details</h3>
-            <p>Zone Name: <?php echo $row['ZoneName']; ?></p>
-            <p>Description: <?php echo $row['Description']; ?></p>
-            <form action="" method="post">
-                <button type="submit" name="done" value="done">Done</button>
-            </form>
-        <?php endif; ?>
 
         <h2>Your Fishing Zones</h2>
         <?php

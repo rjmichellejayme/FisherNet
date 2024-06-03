@@ -33,38 +33,39 @@ if (isset($_POST["submit"])) {
     }
 }
 
-
 $searchResult = null;
 if (isset($_POST["search"])) {
     $searchName = $_POST['searchName'];
-    $searchQuery = "SELECT * FROM maintenancelog WHERE EquipID IN (SELECT EquipID FROM Equipment WHERE EquipName = '$searchName' AND UserID = '$userid')";
+    $searchQuery = "SELECT ml.*, e.EquipName FROM maintenancelog ml 
+                    JOIN Equipment e ON ml.EquipID = e.EquipID 
+                    WHERE e.EquipName = '$searchName' AND e.UserID = '$userid'";
     $searchResult = mysqli_query($conn, $searchQuery);
     if (mysqli_num_rows($searchResult) == 0) {
         echo "<script> alert('No Maintenance Found'); </script>";
     }
 }
+
 if (isset($_POST["update"])) {
-    $updateEquipID = $_POST['updateEquipID'];
+    $logID = $_POST['logID'];
     $updateNotes = $_POST['updateNotes'];
 
-    $checkEquipQuery = "SELECT EquipID FROM maintenancelog WHERE EquipID = '$updateEquipID'";
+    $checkEquipQuery = "SELECT * FROM maintenancelog WHERE maintenanceID = '$logID'";
     $checkEquipResult = mysqli_query($conn, $checkEquipQuery);
     if (mysqli_num_rows($checkEquipResult) > 0) {
-        $updateQuery = "UPDATE maintenancelog SET Notes = '$updateNotes' WHERE EquipID = '$updateEquipID'";
+        $updateQuery = "UPDATE maintenancelog SET Notes = '$updateNotes' WHERE maintenanceID = '$logID'";
         if (mysqli_query($conn, $updateQuery)) {
             echo "<script> alert('Notes Updated Successfully'); </script>";
         } else {
             echo "<script> alert('Error updating notes: " . mysqli_error($conn) . "'); </script>";
         }
     } else {
-            echo "<script> alert('Equipment not found'); </script>";
+        echo "<script> alert('Maintenance entry not found'); </script>";
     }
 }
 
-
-$userMaintenanceQuery = "SELECT * FROM maintenancelog WHERE EquipID IN (SELECT EquipID FROM Equipment WHERE UserID = '$userid')";
+$userMaintenanceQuery = "SELECT ml.*, e.EquipName FROM maintenancelog ml 
+                         JOIN Equipment e ON ml.EquipID = e.EquipID WHERE e.UserID = '$userid'";
 $userMaintenanceResult = mysqli_query($conn, $userMaintenanceQuery);
-
 ?>
 
 <!DOCTYPE html>
@@ -122,7 +123,6 @@ $userMaintenanceResult = mysqli_query($conn, $userMaintenanceQuery);
             </button>
 
             <div class="collapse navbar-collapse" id="navbarNav">
-
               <ul class="navbar-nav">
                 <li class="nav-item">
                   <a class="nav-link" aria-current="page" href="index_fish.php">Home</a>
@@ -150,7 +150,6 @@ $userMaintenanceResult = mysqli_query($conn, $userMaintenanceQuery);
                 </li>
               </ul>            
             </div>
-            
           </div>
       </nav>
 
@@ -197,26 +196,12 @@ $userMaintenanceResult = mysqli_query($conn, $userMaintenanceQuery);
             <button type="submit" name="search">Search</button>
         </form>
 
-        <form id="updateForm" class="form-container maintenance-form" action="" method="post">
-            <h2>Update Maintenance Notes</h2>
-            <br>
-            <label for="updateEquipID">Equipment:</label>
-            <select id="updateEquipID" name="updateEquipID" required>
-                <?php
-                $equipmentResult = mysqli_query($conn, $equipmentQuery);
-                while ($row = mysqli_fetch_assoc($equipmentResult)) { ?>
-                    <option value="<?php echo $row['EquipID']; ?>"><?php echo $row['EquipName']; ?></option>
-                <?php } ?>
-            </select><br>
-            <label for="updateNotes">New Notes:</label>
-            <textarea id="updateNotes" name="updateNotes" required></textarea><br>
-            <button type="submit" name="update">Update Notes</button>
-        </form>
-
-        <h3>Your Equipment Maintenance</h3>
+        <?php if ($searchResult && mysqli_num_rows($searchResult) > 0) { ?>
+        <h3>Search Results</h3>
         <table>
             <thead>
                 <tr>
+                    <th>Maintenance ID</th>
                     <th>Equipment ID</th>
                     <th>Equipment Name</th>
                     <th>Maintenance Date</th>
@@ -226,15 +211,59 @@ $userMaintenanceResult = mysqli_query($conn, $userMaintenanceQuery);
                 </tr>
             </thead>
             <tbody>
-                <?php while ($maintenanceEntry = mysqli_fetch_assoc($userMaintenanceResult)) {
-                    $equipID = $maintenanceEntry['EquipID'];
-                    $equipNameQuery = "SELECT EquipName FROM Equipment WHERE EquipID = '$equipID'";
-                    $equipNameResult = mysqli_query($conn, $equipNameQuery);
-                    $equipName = mysqli_fetch_assoc($equipNameResult)['EquipName'];
+                <?php while ($entry = mysqli_fetch_assoc($searchResult)) { ?>
+                    <tr>
+                        <td><?php echo $entry['MaintenanceID']; ?></td>
+                        <td><?php echo $entry['EquipID']; ?></td>
+                        <td><?php echo $entry['EquipName']; ?></td>
+                        <td><?php echo $entry['MaintenanceDate']; ?></td>
+                        <td><?php echo $entry['MaintenanceType']; ?></td>
+                        <td><?php echo $entry['Cost']; ?></td>
+                        <td><?php echo $entry['Notes']; ?></td>
+                    </tr>
+                <?php } ?>
+            </tbody>
+        </table>
+        <?php } ?>
 
+        <form id="updateForm" class="form-container maintenance-form" action="" method="post">
+            <h2>Update Maintenance Notes</h2>
+            <br>
+            <label for="logID">Maintenance ID:</label>
+            <select id="logID" name="logID" required>
+                <?php 
+                mysqli_data_seek($userMaintenanceResult, 0); 
+                while ($entry = mysqli_fetch_assoc($userMaintenanceResult)) { ?>
+                    <option value="<?php echo $entry['MaintenanceID']; ?>"><?php echo $entry['MaintenanceID'] . " - " . $entry['EquipName'] . " - " . $entry['EquipID']; ?></option>
+                <?php } ?>
+            </select><br>
+
+            <label for="updateNotes">New Notes:</label>
+            <textarea id="updateNotes" name="updateNotes" required></textarea><br>
+            <button type="submit" name="update">Update Notes</button>
+        </form>
+
+        <h3>Your Equipment Maintenance</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Maintenance ID</th>
+                    <th>Equipment ID</th>
+                    <th>Equipment Name</th>
+                    <th>Maintenance Date</th>
+                    <th>Maintenance Type</th>
+                    <th>Cost</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php 
+                mysqli_data_seek($userMaintenanceResult, 0);
+                while ($maintenanceEntry = mysqli_fetch_assoc($userMaintenanceResult)) {
                     echo "<tr>";
+                    echo "<td>" . $maintenanceEntry['MaintenanceID'] . "</td>";
                     echo "<td>" . $maintenanceEntry['EquipID']  . "</td>";
-                    echo "<td>" . $equipName . "</td>";
+                    echo "<td>" . $maintenanceEntry['EquipName'] . "</td>";
                     echo "<td>" . $maintenanceEntry['MaintenanceDate'] . "</td>";
                     echo "<td>" . $maintenanceEntry['MaintenanceType'] . "</td>";
                     echo "<td>" . $maintenanceEntry['Cost'] . "</td>";

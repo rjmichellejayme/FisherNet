@@ -4,7 +4,6 @@ CREATE TABLE Users (
     Username VARCHAR(50),
     Email VARCHAR(100),
     Password VARCHAR(255),
-    ConfirmPassword VARCHAR(255),
     ProfilePicture VARCHAR(255),
     UserType ENUM('Fisherman') DEFAULT 'Fisherman'
 );

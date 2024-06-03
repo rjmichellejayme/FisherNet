@@ -3,27 +3,22 @@ include 'dbfish.php';
 session_start();
 
 if (empty($_SESSION["UserID"])) {
-    // Redirect to login page if user is not logged in
     header("Location: login.php");
     exit();
 }
 
 $userid = $_SESSION["UserID"];
 
-// Fetch user's information from the database
 $userInfoQuery = "SELECT * FROM users WHERE UserID = '$userid'";
 $userInfoResult = mysqli_query($conn, $userInfoQuery);
 $userInfo = mysqli_fetch_assoc($userInfoResult);
 
-// Handle password update
 if (isset($_POST["updatePassword"])) {
     $currentPassword = $_POST['currentPassword'];
     $newPassword = $_POST['newPassword'];
     $confirmNewPassword = $_POST['confirmNewPassword'];
 
-    // Verify if the current password matches the one in the database
     if ($currentPassword === $userInfo['Password']) {
-        // Check if new password and confirm new password match
         if ($newPassword === $confirmNewPassword) {
             $updateQuery = "UPDATE users SET Password='$newPassword' WHERE UserID='$userid'";
             mysqli_query($conn, $updateQuery);
@@ -37,27 +32,25 @@ if (isset($_POST["updatePassword"])) {
 }
 
 if (isset($_POST["deleteAccount"])) {
-    // Delete related records from catchlogbook table
     $deleteRelatedQuery = "DELETE FROM catchlogbook WHERE UserID = '$userid'";
     mysqli_query($conn, $deleteRelatedQuery);
-  
-    // Delete related records from equipment table
+    $deleteRelatedQuery = "DELETE FROM maintenancelog WHERE EquipID IN (SELECT EquipID FROM equipment WHERE UserID = '$userid')";
+    mysqli_query($conn, $deleteRelatedQuery);
+
     $deleteRelatedQuery = "DELETE FROM equipment WHERE UserID = '$userid'";
     mysqli_query($conn, $deleteRelatedQuery);
 
-     $deleteRelatedQuery = "DELETE FROM fishmarketprices WHERE UserID = '$userid'";
+    $deleteRelatedQuery = "DELETE FROM fishmarketprices WHERE UserID = '$userid'";
     mysqli_query($conn, $deleteRelatedQuery);
-
-
 
     $deleteRelatedQuery = "DELETE FROM fishingzones WHERE UserID = '$userid'";
     mysqli_query($conn, $deleteRelatedQuery);
 
-    // Now delete the user account
+
+
     $deleteQuery = "DELETE FROM users WHERE UserID = '$userid'";
     mysqli_query($conn, $deleteQuery);
     
-    // Clear session and redirect to login page after account deletion
     session_unset();
     session_destroy();
     header("Location: login.php");
